@@ -6,10 +6,10 @@ open FSharp.Stats
 module MultipleTesting = 
 
 
-    /// Benjamini-Hochberg Correction (BH)
-    /// 'projection' should return a tuple of any identifier and the pValues as float, when applied to 'rawP'
+    /// Benjamini-Hochberg Correction (BH).
     /// This function applies the Benjamini-Hochberg multiple testing correcture and returns all False Discovery Rates to which the given p-values are still 
     /// significant.
+    /// 'projection' should return a tuple of any identifier and the pValues as float, when applied to 'rawP'.
     /// Note: corrected pValues are not sorted in original order!
     let benjaminiHochbergFDRBy (projection:'a -> 'b*float) (rawP:seq<'a>) = 
 
@@ -35,7 +35,7 @@ module MultipleTesting =
         adjp @ rawpListNan
 
 
-    /// Benjamini-Hochberg Correction (BH)
+    /// Benjamini-Hochberg Correction (BH).
     /// This function applies the Benjamini-Hochberg multiple testing correcture and returns all False Discovery Rates to which the given p-values are still 
     /// significant.
     let benjaminiHochbergFDR (rawPValues:seq<float>) =
@@ -46,6 +46,14 @@ module MultipleTesting =
         |> List.sortBy fst
         |> List.map snd
         |> Seq.ofList
+
+
+    // adapted from: https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction   &   https://personal.utdallas.edu/~herve/Abdi-Bonferroni2007-pretty.pdf
+    /// Computes the Dunn-Šidák correction onto a collection of p-values with a given alpha. Returns a list of booleans which state if the p-value should be rejected or not, and the new critical value for this alpha.
+    let dunnSidak (pValues: seq<float>) alpha = 
+        let m = float (Seq.length pValues)
+        let criticalValue = 1. - (1. - alpha) ** (1. / m)
+        List.map (fun p -> if p > criticalValue then true, p else false, p) (List.ofSeq pValues), criticalValue
 
 
     // John D. Storey
