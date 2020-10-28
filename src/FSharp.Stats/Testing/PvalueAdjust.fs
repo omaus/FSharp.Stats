@@ -49,11 +49,13 @@ module MultipleTesting =
 
 
     // adapted from: https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction   &   https://personal.utdallas.edu/~herve/Abdi-Bonferroni2007-pretty.pdf
-    /// Computes the Dunn-Šidák correction onto a collection of p-values with a given alpha. Returns a list of booleans which state if the p-value should be rejected or not, and the new critical value for this alpha.
-    let dunnSidak (pValues: seq<float>) alpha = 
+    // Old: /// Computes the Dunn-Sidak correction onto a collection of p-values with a given alpha. Returns a list of booleans which state if the p-value should be rejected or not, and the new critical value for this alpha.
+    /// Computes the Dunn-Sidak correction onto a collection of p-values with a given alpha. Returns a critical value. p-values above the critical value should be rejected.
+    let dunnSidak alpha (pValues: seq<float>) = 
         let m = float (Seq.length pValues)
         let criticalValue = 1. - (1. - alpha) ** (1. / m)
-        List.map (fun p -> if p > criticalValue then true, p else false, p) (List.ofSeq pValues), criticalValue
+        // List.map (fun p -> if p > criticalValue then true, p else false, p) (List.ofSeq pValues),
+        criticalValue
 
 
     // John D. Storey
